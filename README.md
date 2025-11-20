@@ -1,4 +1,5 @@
 # Control
+<img width="1080" height="1080" alt="image" src="https://github.com/user-attachments/assets/9e71b464-b904-4538-bf0c-10628372bb1b" />
 
 A secure, decentralized communication platform built with Rust and Tauri, featuring end-to-end encrypted messaging and offline file exchange capabilities.
 
@@ -365,3 +366,4 @@ Built with:
 - [libp2p](https://libp2p.io/) - P2P networking
 - [IPFS](https://ipfs.tech/) - Distributed storage
 - [RustCrypto](https://github.com/RustCrypto) - Cryptographic primitives
+
