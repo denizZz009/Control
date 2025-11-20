@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/tauri';
-import { open, save } from '@tauri-apps/api/dialog';
+import { open } from '@tauri-apps/api/dialog';
 
 interface DeadDropCreated {
   cid: string;
@@ -40,10 +40,9 @@ function DeadDrop() {
       e.preventDefault();
       setIsDragging(false);
 
-      const files = Array.from(e.dataTransfer.files);
-      if (files.length > 0) {
-        await processFile(files[0].path);
-      }
+      // Note: File.path is not available in browser
+      // Use file picker instead for Tauri
+      alert('Please use the file picker (click the drop zone)');
     },
     [threshold, totalShards]
   );
