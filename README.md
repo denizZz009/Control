@@ -350,8 +350,9 @@ rm ~/.local/share/com.control.app/identity.enc
 ### Images 
 <img width="1919" height="1031" alt="1" src="https://github.com/user-attachments/assets/a29c0325-6e62-467d-94ec-0d41ea98406d" />
 <img width="1919" height="1030" alt="2" src="https://github.com/user-attachments/assets/d43b191e-e103-46e9-bfef-3242db7a72b7" />
-<img width="1919" height="1031" alt="3" src="https://github.com/user-attachments/assets/f2c2660a-0144-4653-8f90-2493c18ec336" />
 <img width="1919" height="1033" alt="4" src="https://github.com/user-attachments/assets/1a6c7ba8-9a65-41b0-99a3-85639c789690" />
+<img width="1919" height="1031" alt="3" src="https://github.com/user-attachments/assets/f2c2660a-0144-4653-8f90-2493c18ec336" />
+<img width="1913" height="1029" alt="6" src="https://github.com/user-attachments/assets/20e567fe-b7f4-4472-b44e-12e25ec0e23c" />
 
 ## License
 
@@ -372,5 +373,6 @@ Built with:
 - [libp2p](https://libp2p.io/) - P2P networking
 - [IPFS](https://ipfs.tech/) - Distributed storage
 - [RustCrypto](https://github.com/RustCrypto) - Cryptographic primitives
+
 
 
