@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DeadDrop HQ - Backend Test Suite</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%);
+            color: #00ff00;
+            padding: 20px;
+            min-height: 100vh;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #ff0000;
+            text-shadow: 0 0 20px #ff0000;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+        }
+        .test-section {
+            background: rgba(0, 255, 0, 0.05);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        .test-section h2 {
+            color: #00ffff;
+            margin-bottom: 15px;
+            font-size: 1.5em;
+        }
+        button {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 12px 24px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 5px;
+            margin: 5px;
+            transition: all 0.3s;
+        }
+        button:hover {
+            background: #00cc00;
+            transform: scale(1.05);
+            box-shadow: 0 0 20px #00ff00;
+        }
+        button:disabled {
+            background: #333;
+            color: #666;
+            cursor: not-allowed;
+            transform: none;
+        }
+        input, textarea {
+            background: #1a1a1a;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
+            border-radius: 5px;
+            width: 100%;
+            margin: 5px 0;
+        }
+        .output {
+            background: #000;
+            border: 1px solid #00ff00;
+            padding: 15px;
+            margin-top: 10px;
+            border-radius: 5px;
+            max-height: 300px;
+            overflow-y: auto;
+            font-size: 0.9em;
+        }
+        .success {
+            color: #00ff00;
+        }
+        .error {
+            color: #ff0000;
+        }
+        .info {
+            color: #00ffff;
+        }
+        .warning {
+            color: #ffff00;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 10px;
+            margin: 10px 0;
+        }
+        .status-bar {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            padding: 10px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        .message-item {
+            background: rgba(0, 255, 255, 0.1);
+            border-left: 3px solid #00ffff;
+            padding: 10px;
+            margin: 5px 0;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🔒 DEADDROP HQ - BACKEND TEST SUITE 🔒</h1>
+        
+        <div class="status-bar">
+            <span id="status">Status: Initializing...</span>
+        </div>
+
+        <!-- Identity Tests -->
+        <div class="test-section">
+            <h2>🔑 Identity Management</h2>
+            <div class="grid">
+                <div>
+                    <input type="password" id="password" placeholder="Enter password" value="test-password-123">
+                    <button onclick="initIdentity()">Initialize Identity</button>
+                    <button onclick="getPublicId()">Get Public ID</button>
+                </div>
+            </div>
+            <div class="output" id="identity-output">
+                <span class="info">Ready to test identity operations...</span>
+            </div>
+        </div>
+
+        <!-- Ghost Mode Tests -->
+        <div class="test-section">
+            <h2>👻 Ghost Mode (P2P Messaging)</h2>
+            <div class="grid">
+                <div>
+                    <button onclick="startGhostMode()">Start Ghost Mode</button>
+                    <button onclick="stopGhostMode()">Stop Ghost Mode</button>
+                </div>
+            </div>
+            <div>
+                <input type="text" id="target-key" placeholder="Target Public Key (base58)">
+                <textarea id="message-content" rows="3" placeholder="Message content"></textarea>
+                <button onclick="sendMessage()">Send Message</button>
+            </div>
+            <div class="output" id="ghost-output">
+                <span class="info">Start Ghost Mode to begin P2P messaging...</span>
+            </div>
+            <h3 style="color: #00ffff; margin-top: 15px;">📨 Received Messages</h3>
+            <div class="output" id="messages-output">
+                <span class="info">Waiting for messages...</span>
+            </div>
+        </div>
+
+        <!-- Dead Drop Tests -->
+        <div class="test-section">
+            <h2>📦 Dead Drop (Offline File Exchange)</h2>
+            <div class="grid">
+                <div>
+                    <input type="text" id="file-path" placeholder="File path (e.g., C:\path\to\file.txt)">
+                    <input type="number" id="threshold" placeholder="Threshold" value="2" min="2">
+                    <input type="number" id="total-shards" placeholder="Total Shards" value="3" min="2">
+                    <button onclick="createDrop()">Create Dead Drop</button>
+                </div>
+                <div>
+                    <input type="text" id="cid" placeholder="IPFS CID">
+                    <textarea id="shards" rows="3" placeholder="Shards (JSON array)"></textarea>
+                    <input type="text" id="output-path" placeholder="Output path">
+                    <button onclick="retrieveDrop()">Retrieve Dead Drop</button>
+                </div>
+            </div>
+            <div class="output" id="drop-output">
+                <span class="info">Ready to test dead drop operations...</span>
+                <br><span class="warning">⚠️ Requires IPFS daemon running on localhost:5001</span>
+            </div>
+        </div>
+
+        <!-- System Info -->
+        <div class="test-section">
+            <h2>ℹ️ System Information</h2>
+            <div class="output" id="system-info">
+                <span class="info">Loading system info...</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check if Tauri API is available
+        if (!window.__TAURI__) {
+            document.getElementById('status').innerHTML = '<span class="error">❌ Tauri API not available - Run with: cargo tauri dev</span>';
+        } else {
+            document.getElementById('status').innerHTML = '<span class="success">✅ Backend Connected</span>';
+        }
+
+        const { invoke } = window.__TAURI__?.tauri || {};
+
+        // Utility functions
+        function log(elementId, message, type = 'info') {
+            const output = document.getElementById(elementId);
+            const timestamp = new Date().toLocaleTimeString();
+            const className = type;
+            output.innerHTML += `<div class="${className}">[${timestamp}] ${message}</div>`;
+            output.scrollTop = output.scrollHeight;
+        }
+
+        function clearLog(elementId) {
+            document.getElementById(elementId).innerHTML = '';
+        }
+
+        // Identity Management
+        async function initIdentity() {
+            const password = document.getElementById('password').value;
+            if (!password) {
+                log('identity-output', '❌ Please enter a password', 'error');
+                return;
+            }
+
+            try {
+                clearLog('identity-output');
+                log('identity-output', '🔄 Initializing identity...', 'info');
+                const publicId = await invoke('init_identity', { password });
+                log('identity-output', `✅ Identity initialized!`, 'success');
+                log('identity-output', `📋 Public ID: ${publicId}`, 'success');
+                log('identity-output', `💾 Identity saved to disk (encrypted)`, 'info');
+            } catch (error) {
+                log('identity-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        async function getPublicId() {
+            try {
+                log('identity-output', '🔄 Fetching public ID...', 'info');
+                const publicId = await invoke('get_public_id');
+                log('identity-output', `✅ Public ID: ${publicId}`, 'success');
+            } catch (error) {
+                log('identity-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        // Ghost Mode
+        async function startGhostMode() {
+            try {
+                clearLog('ghost-output');
+                log('ghost-output', '🔄 Starting Ghost Mode...', 'info');
+                const result = await invoke('start_ghost_mode');
+                log('ghost-output', `✅ ${result}`, 'success');
+                log('ghost-output', `🌐 P2P network active`, 'success');
+                log('ghost-output', `👂 Listening for messages...`, 'info');
+            } catch (error) {
+                log('ghost-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        async function stopGhostMode() {
+            try {
+                await invoke('stop_ghost_mode');
+                log('ghost-output', `✅ Ghost Mode stopped`, 'success');
+            } catch (error) {
+                log('ghost-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        async function sendMessage() {
+            const targetKey = document.getElementById('target-key').value;
+            const content = document.getElementById('message-content').value;
+
+            if (!targetKey || !content) {
+                log('ghost-output', '❌ Please enter target key and message', 'error');
+                return;
+            }
+
+            try {
+                log('ghost-output', `🔄 Sending message to ${targetKey.substring(0, 8)}...`, 'info');
+                await invoke('send_ghost_message', { 
+                    targetPublicKey: targetKey, 
+                    content 
+                });
+                log('ghost-output', `✅ Message sent!`, 'success');
+                document.getElementById('message-content').value = '';
+            } catch (error) {
+                log('ghost-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        // Listen for incoming messages
+        if (window.__TAURI__) {
+            window.__TAURI__.event.listen('ghost_msg', (event) => {
+                const { from, content, timestamp } = event.payload;
+                const date = new Date(timestamp * 1000).toLocaleString();
+                const messageHtml = `
+                    <div class="message-item">
+                        <strong>From:</strong> ${from.substring(0, 16)}...<br>
+                        <strong>Time:</strong> ${date}<br>
+                        <strong>Message:</strong> ${content}
+                    </div>
+                `;
+                document.getElementById('messages-output').innerHTML += messageHtml;
+            });
+
+            window.__TAURI__.event.listen('ghost_error', (event) => {
+                log('ghost-output', `❌ P2P Error: ${event.payload}`, 'error');
+            });
+        }
+
+        // Dead Drop
+        async function createDrop() {
+            const filePath = document.getElementById('file-path').value;
+            const threshold = parseInt(document.getElementById('threshold').value);
+            const totalShards = parseInt(document.getElementById('total-shards').value);
+
+            if (!filePath) {
+                log('drop-output', '❌ Please enter file path', 'error');
+                return;
+            }
+
+            if (threshold > totalShards) {
+                log('drop-output', '❌ Threshold cannot exceed total shards', 'error');
+                return;
+            }
+
+            try {
+                clearLog('drop-output');
+                log('drop-output', '🔄 Creating dead drop...', 'info');
+                log('drop-output', `📄 File: ${filePath}`, 'info');
+                log('drop-output', `🔢 Threshold: ${threshold}/${totalShards}`, 'info');
+                
+                const result = await invoke('create_drop', { 
+                    filePath, 
+                    threshold, 
+                    totalShards 
+                });
+                
+                log('drop-output', `✅ Dead drop created!`, 'success');
+                log('drop-output', `📦 IPFS CID: ${result.cid}`, 'success');
+                log('drop-output', `🔑 Generated ${result.shards.length} shards`, 'success');
+                
+                result.shards.forEach((shard, i) => {
+                    log('drop-output', `   Shard ${i + 1}: ${shard.substring(0, 32)}...`, 'info');
+                });
+
+                // Auto-fill retrieve fields
+                document.getElementById('cid').value = result.cid;
+                document.getElementById('shards').value = JSON.stringify(result.shards.slice(0, threshold));
+                
+                log('drop-output', `💡 Retrieve fields auto-filled with ${threshold} shards`, 'warning');
+            } catch (error) {
+                log('drop-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        async function retrieveDrop() {
+            const cid = document.getElementById('cid').value;
+            const shardsText = document.getElementById('shards').value;
+            const outputPath = document.getElementById('output-path').value;
+
+            if (!cid || !shardsText || !outputPath) {
+                log('drop-output', '❌ Please fill all fields', 'error');
+                return;
+            }
+
+            try {
+                const shards = JSON.parse(shardsText);
+                
+                log('drop-output', '🔄 Retrieving dead drop...', 'info');
+                log('drop-output', `📦 CID: ${cid}`, 'info');
+                log('drop-output', `🔑 Using ${shards.length} shards`, 'info');
+                
+                await invoke('retrieve_drop', { cid, shards, outputPath });
+                
+                log('drop-output', `✅ Dead drop retrieved!`, 'success');
+                log('drop-output', `💾 Saved to: ${outputPath}`, 'success');
+            } catch (error) {
+                log('drop-output', `❌ Error: ${error}`, 'error');
+            }
+        }
+
+        // System Info
+        async function loadSystemInfo() {
+            const info = document.getElementById('system-info');
+            info.innerHTML = `
+                <div class="success">✅ Tauri Backend: Active</div>
+                <div class="info">📦 Framework: Tauri v1.6</div>
+                <div class="info">🦀 Language: Rust</div>
+                <div class="info">🔐 Encryption: ChaCha20-Poly1305, X25519, AES-256-GCM</div>
+                <div class="info">🌐 P2P: libp2p v0.52 (GossipSub + mDNS)</div>
+                <div class="info">📦 Storage: IPFS</div>
+                <div class="info">🔑 Secret Sharing: Shamir (sharks)</div>
+                <div class="warning">⚠️ For P2P testing, run 2 instances on same network</div>
+                <div class="warning">⚠️ For Dead Drop, ensure IPFS daemon is running</div>
+            `;
+        }
+
+        // Initialize
+        if (window.__TAURI__) {
+            loadSystemInfo();
+        }
+    </script>
+</body>
+</html>
